@@ -24,13 +24,18 @@ public:
 	// ------------버튼--------------------
 	UPROPERTY(meta=(BindWidget))
 	class UButton* buttonGetWebImage;
-
+	UPROPERTY(meta=(BindWidget))
+	class UButton* buttonBackBasicMenu;
+	UPROPERTY(meta=(BindWidget))
+	class UWidgetSwitcher* widgetSwitching;
 
 	// ------------웹 이미지--------------
 	UPROPERTY(meta=(BindWidget))
 	class UImage* webImage;
 	UFUNCTION()
 	void OnMyClickGetWebImage();
+	UFUNCTION()
+	void OnMyClickBackBasicMenu();
 
 	void SetWebImage(class UTexture2D* newTexture);
 
