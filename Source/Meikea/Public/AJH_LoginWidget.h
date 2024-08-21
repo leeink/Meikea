@@ -22,14 +22,14 @@ public:
 	UFUNCTION()
 	void OnMyClickJoinPage();
 
-	//UPROPERTY(meta = (BindWidget))
-	class UButton* BT_login;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* BT_Login;
 	UFUNCTION()
 	void OnMyClickLoginRequest();
 	UPROPERTY(meta = (BindWidget))
-	class UEditableText* edit_LoginId;
+	class UEditableText* edit_loginID;
 	UPROPERTY(meta = (BindWidget))
-	class UEditableText* edit_LoginPW;
+	class UEditableText* edit_loginPW;
 
 	UPROPERTY()
 	class UAJH_JoinWidget* joinWidget;
