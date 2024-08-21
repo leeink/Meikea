@@ -195,7 +195,6 @@ void AAJH_HttpPracticeActor::OnPostVerifySignIn(TSharedPtr<IHttpRequest> Request
 		FString res = Response->GetContentAsString();
 		FString parsedData = UJsonParseLib::JsonParse(res);
 
-
 		// 로그인 성공
 		if (parsedData.Contains("null")) {
 			UE_LOG(LogTemp, Warning, TEXT("Login Success %s"), *parsedData);
