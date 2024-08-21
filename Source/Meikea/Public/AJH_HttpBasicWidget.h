@@ -45,7 +45,7 @@ public:
 
 	FString ServerURL = "http://mtvs.helloworldlabs.kr:7771/api/json";
 
-	FString WebImageURL = "https://t1.daumcdn.net/news/202105/25/koreadognews/20210525045023050wquu.jpg";
+	FString WebImageURL = "http://192.168.1.88:8080/image";
 
 	//---------------------------------------로컬---------------------------------- 
 	// ----첫번째 가구 UI 버튼--------

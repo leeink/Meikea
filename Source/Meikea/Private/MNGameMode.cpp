@@ -6,6 +6,9 @@
 #include "AJH_HttpBasicWidget.h"
 #include "ImageUtils.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "IImageWrapper.h"
+#include "IImageWrapperModule.h"
+#include "JsonParseLib.h"
 
 
 //void AMNGameMode::ReqGetImage(FString url)
@@ -83,7 +86,7 @@ void AMNGameMode::ReqImage(FString url)
 	TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
 
 	// 요청할 정보를 설정
-	req->SetURL(url);
+	req->SetURL("http://192.168.1.88:8080/image");
 	req->SetVerb(TEXT("GET"));
 	req->SetHeader(TEXT("content-type"), TEXT("image/jpeg"));
 
@@ -98,9 +101,18 @@ void AMNGameMode::OnResImage(FHttpRequestPtr Request, FHttpResponsePtr Response,
 {
 	if (bConnectedSuccessfully)
 	{
-		//TArray<uint8> data = Response->GetContent();
-		FString fileServerURL = "http://192.168.1.88:8080/image/upload";
-		ReqsendRT(fileServerURL);
+		//FString fileServerURL = "http://192.168.1.88:8080/image";
+		// Response 값 Parsing
+		FString res = Response->GetContentAsString();
+		FString parsedData = UJsonParseLib::MeikeaJsonParse(res);
+
+		if (parsedData.Contains("null"))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Meikea Success %s"), *parsedData);
+			UE_LOG(LogTemp, Warning, TEXT("Successed Res: %s"), *Response->GetContentAsString());
+
+
+		}
 	}
 	else {
 		// 실패
@@ -110,6 +122,8 @@ void AMNGameMode::OnResImage(FHttpRequestPtr Request, FHttpResponsePtr Response,
 
 void AMNGameMode::ReqsendRT(FString url)
 {
+	
+	
 	UTextureRenderTarget2D* textRT = RT;
 	
 	FImage image;
@@ -129,7 +143,7 @@ void AMNGameMode::ReqsendRT(FString url)
 	FHttpModule& httpModule = FHttpModule::Get();
 	TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
 
-	req->SetURL(url);
+	req->SetURL("http://192.168.1.88:8080/image");
 	req->SetVerb(TEXT("POST"));
 	req->SetHeader(TEXT("content-type"), TEXT("application/octet-stream"));
 	req->SetContent(TArray<uint8>(CompressedData));
@@ -144,14 +158,85 @@ void AMNGameMode::OnResSendRT(FHttpRequestPtr Request, FHttpResponsePtr Response
 {
 	if (bConnectedSuccessfully)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("321321"));
+		//// 서버에서 응답받은 Content-Type 헤더를 기반으로 이미지 포맷 설정
+		FString ContentType = Response->GetHeader("Content-Type");
+		EImageFormat ImageFormat = EImageFormat::Invalid;
+
+		if (ContentType == "image/jpeg")
+		{
+			ImageFormat = EImageFormat::JPEG;
+		}
+		else if (ContentType == "image/png")
+		{
+			ImageFormat = EImageFormat::PNG;
+		}
+
+		if (ImageFormat == EImageFormat::Invalid)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Unsupported image format."));
+			return;
+		}
+
+		FString fileServerURL = "http://192.168.1.88:8080/image/upload";
 		TArray<uint8> data = Response->GetContent();
+		UTexture2D* texture = LoadTextureFromData(data, ImageFormat);
 		FString imagePath = FPaths::ProjectPersistentDownloadDir() + "/Render.jpg";
 		FFileHelper::SaveArrayToFile(data, *imagePath);
-		UTexture2D* realTexture = FImageUtils::ImportBufferAsTexture2D(data);
-		// httpUI->SetWebImage(realTexture);
+		realTexture = texture;
+		httpUI->SetWebImage(realTexture);
+		//GetWorld()->GetTimerManager().SetTimer(serverHandle, this, &AMNGameMode::ServerTime, 10.0f, false, 10.0f);
+
+		// Response 값 Parsing
+		/*FString res = Response->GetContentAsString();
+		FString parsedData = UJsonParseLib::MeikeaJsonParse(res);
+
+		if (parsedData.Contains("null"))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Meikea Success %s"), *parsedData);
+			UE_LOG(LogTemp, Warning, TEXT("Successed Res: %s"), *Response->GetContentAsString());
+
+
+		}*/
+		
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed..."));
 	}
+}
+
+void AMNGameMode::ServerTime()
+{
+	
+}
+
+UTexture2D* AMNGameMode::LoadTextureFromData(const TArray<uint8>& ImageData, EImageFormat ImageFormat)
+{
+	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
+	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(ImageFormat);
+
+	if (ImageWrapper.IsValid() && ImageWrapper->SetCompressed(ImageData.GetData(), ImageData.Num()))
+	{
+		TArray<uint8> UncompressedData;
+		if (ImageWrapper->GetRaw(ERGBFormat::BGRA, 8, UncompressedData))
+		{
+			UTexture2D* Texture = UTexture2D::CreateTransient(ImageWrapper->GetWidth(), ImageWrapper->GetHeight());
+			if (!Texture)
+			{
+				return nullptr;
+			}
+
+			void* TextureData = Texture->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+			FMemory::Memcpy(TextureData, UncompressedData.GetData(), UncompressedData.Num());
+			Texture->GetPlatformData()->Mips[0].BulkData.Unlock();
+
+			Texture->UpdateResource();
+
+			return Texture;
+		}
+	}
+
+	UE_LOG(LogTemp, Error, TEXT("Failed to load texture from data."));
+	return nullptr;
 }

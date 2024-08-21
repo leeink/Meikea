@@ -18,7 +18,7 @@ void UAJH_HttpBasicWidget::NativeConstruct()
 void UAJH_HttpBasicWidget::OnMyClickGetWebImage()
 {
 
-	httpGameMode->ReqImage(WebImageURL);
+	httpGameMode->ReqsendRT(WebImageURL);
 	// UE_LOG(LogTemp, Warning, TEXT("Successed"));
 }
 
@@ -29,6 +29,10 @@ void UAJH_HttpBasicWidget::OnMyClickBackBasicMenu()
 
 void UAJH_HttpBasicWidget::SetWebImage(UTexture2D* newTexture)
 {
+	
+	UE_LOG(LogTemp, Warning, TEXT("null"));
+
+
 	webImage->SetBrushFromTexture(newTexture);
 }
 

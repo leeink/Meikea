@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
+#include "IImageWrapper.h"
+#include "IImageWrapperModule.h"
 #include "MNGameMode.generated.h"
 
 /**
@@ -36,4 +38,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	class UTextureRenderTarget2D* RT;
+
+	FTimerHandle serverHandle;
+	UTexture2D* realTexture;
+	void ServerTime();
+	UTexture2D* LoadTextureFromData(const TArray<uint8>& ImageData, EImageFormat ImageFormat);
 };
