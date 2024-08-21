@@ -9,6 +9,7 @@
 #include "JsonParseLib.h"
 #include "AJH_JoinWidget.h"
 #include "AJH_LoginWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AAJH_HttpPracticeActor::AAJH_HttpPracticeActor()
@@ -199,7 +200,7 @@ void AAJH_HttpPracticeActor::OnPostVerifySignIn(TSharedPtr<IHttpRequest> Request
 		if (parsedData.Contains("null")) {
 			UE_LOG(LogTemp, Warning, TEXT("Login Success %s"), *parsedData);
 			UE_LOG(LogTemp, Warning, TEXT("Successed Verify Login: %s"), *Response->GetContentAsString());
-
+			UGameplayStatics::OpenLevel(GetWorld(), FName("NewLevel"));
 			return;
 		}
 		else

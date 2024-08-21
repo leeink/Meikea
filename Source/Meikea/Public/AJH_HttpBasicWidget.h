@@ -19,6 +19,8 @@ public:
 
 	UPROPERTY()
 	class AAJH_HttpPracticeActor* httpActor;
+	UPROPERTY()
+	class AMNGameMode* httpGameMode;
 
 	// ----------------------------통신----------------------------------------
 	// ------------서버 통신 버튼--------------------
@@ -30,7 +32,7 @@ public:
 	class UWidgetSwitcher* widgetSwitching;
 
 	// ------------웹 이미지--------------
-	UPROPERTY(meta=(BindWidget))
+	UPROPERTY(EditDefaultsOnly, meta=(BindWidget))
 	class UImage* webImage;
 	UFUNCTION()
 	void OnMyClickGetWebImage();

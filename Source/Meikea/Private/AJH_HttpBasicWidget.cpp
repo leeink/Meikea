@@ -6,22 +6,25 @@
 #include "AJH_HttpPracticeActor.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
+#include "MNGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 void UAJH_HttpBasicWidget::NativeConstruct()
 {
-	/*buttonGetWebImage->OnClicked.AddDynamic(this, &UAJH_HttpBasicWidget::OnMyClickGetWebImage);
-	buttonBackBasicMenu->OnClicked.AddDynamic(this, &UAJH_HttpBasicWidget::OnMyClickBackBasicMenu);*/
+	buttonGetWebImage->OnClicked.AddDynamic(this, &UAJH_HttpBasicWidget::OnMyClickGetWebImage);
+	httpGameMode = Cast<AMNGameMode>(UGameplayStatics::GetGameMode(this));
 }
 
 void UAJH_HttpBasicWidget::OnMyClickGetWebImage()
 {
-	widgetSwitching->SetActiveWidgetIndex(1);
-	httpActor->ReqGetWebImage(WebImageURL);
+
+	httpGameMode->ReqImage(WebImageURL);
+	// UE_LOG(LogTemp, Warning, TEXT("Successed"));
 }
 
 void UAJH_HttpBasicWidget::OnMyClickBackBasicMenu()
 {
-	widgetSwitching->SetActiveWidgetIndex(0);
+	
 }
 
 void UAJH_HttpBasicWidget::SetWebImage(UTexture2D* newTexture)
