@@ -19,9 +19,26 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	class UButton* BT_JOIN;
+	UFUNCTION()
 	void OnMyClickJoinPage();
+
+	//UPROPERTY(meta = (BindWidget))
+	class UButton* BT_login;
+	UFUNCTION()
+	void OnMyClickLoginRequest();
+	UPROPERTY(meta = (BindWidget))
+	class UEditableText* edit_LoginId;
+	UPROPERTY(meta = (BindWidget))
+	class UEditableText* edit_LoginPW;
 
 	UPROPERTY()
 	class UAJH_JoinWidget* joinWidget;
+	// 인터페이스를 위한 UI
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UUserWidget> joinPageFactory;
+
+	UPROPERTY()
+	class AAJH_HttpPracticeActor* httpReqActor;
+	void SetHttpActor(class AAJH_HttpPracticeActor* actor);
 
 };

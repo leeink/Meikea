@@ -2,14 +2,9 @@
 
 
 #include "MNPlayerController.h"
-
-#include "AJH_HttpBasicWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
 #include "InputAction.h"
-#include "Blueprint/UserWidget.h"
-#include "Components/WidgetInteractionComponent.h"
 
 AMNPlayerController::AMNPlayerController()
 {
@@ -40,7 +35,7 @@ void AMNPlayerController::BeginPlay()
 	SpawnActorClasses.Add(SpawnActorClass4);
 	SpawnActorClasses.Add(SpawnActorClass5);
 
-	SelectActor = GetWorld() -> SpawnActor<AActor>(SpawnActorClasses[SelectIndex], FVector::ZeroVector, FRotator::ZeroRotator);
+	SelectActor = GetWorld() -> SpawnActor<AActor>(SpawnActorClasses[SelectIndex], FVector(0.f,0.f,-99999.f), FRotator::ZeroRotator);
 
 	bShowMouseCursor = true;
 }
@@ -50,7 +45,7 @@ void AMNPlayerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	FHitResult HitResult;
-	bool bHit = GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, true, HitResult);
+	bool bHit = GetHitResultUnderCursorByChannel(TraceTypeQuery1, true, HitResult);
 	
 	if(bHit && bIsSelecting)
 	{
@@ -66,6 +61,7 @@ void AMNPlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		EnhancedInputComponent->BindAction(IA_MouseLeftClick, ETriggerEvent::Started, this, &AMNPlayerController::OnMouseLeftClick);
+		EnhancedInputComponent->BindAction(IA_ObjectRotate, ETriggerEvent::Started, this, &AMNPlayerController::OnObjectRotate);
 	}
 }
 
@@ -75,8 +71,22 @@ void AMNPlayerController::OnMouseLeftClick(const FInputActionValue& Value)
 	bool value = Value.Get<bool>();
 	if (value && bIsSelecting)
 	{
-		GetWorld() -> SpawnActor<AActor>(SpawnActorClasses[SelectIndex], CursorLocation + FVector(0.f,0.f,50.f), FRotator::ZeroRotator);
 		SetIsSelect(false);
+		SelectActor = nullptr;
+	}
+	else
+	{
+		// Do something else
+	}
+}
+
+void AMNPlayerController::OnObjectRotate(const FInputActionValue& Value)
+{
+	// Handle the object rotate input
+	bool value = Value.Get<bool>();
+	if (value && bIsSelecting)
+	{
+		SelectActor->SetActorRotation(SelectActor->GetActorRotation() + FRotator(0.f, 90.f, 0.f));
 	}
 	else
 	{

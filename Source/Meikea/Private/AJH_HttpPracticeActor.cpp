@@ -7,6 +7,8 @@
 #include "ImageUtils.h"
 #include "AJH_HttpBasicWidget.h"
 #include "JsonParseLib.h"
+#include "AJH_JoinWidget.h"
+#include "AJH_LoginWidget.h"
 
 // Sets default values
 AAJH_HttpPracticeActor::AAJH_HttpPracticeActor()
@@ -21,14 +23,20 @@ void AAJH_HttpPracticeActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// UI를 생성해서 기억하고싶다.
-	httpUI = Cast<UAJH_HttpBasicWidget>(CreateWidget(GetWorld(), HttpUIFactory));
-	if (httpUI)
-	{
-		httpUI->AddToViewport();
-		httpUI->SetHttpActor(this);
-	}
+	//// UI를 생성해서 기억하고싶다.
+	//httpUI = Cast<UAJH_HttpBasicWidget>(CreateWidget(GetWorld(), HttpUIFactory));
+	//if (httpUI)
+	//{
+	//	httpUI->AddToViewport();
+	//	httpUI->SetHttpActor(this);
+	//}
 
+	loginUI = Cast<UAJH_LoginWidget>(CreateWidget(GetWorld(), HttpUIFactory));
+	if (loginUI)
+	{
+		loginUI->AddToViewport();
+		loginUI->SetHttpActor(this);
+	}
 	auto* pc = GetWorld()->GetFirstPlayerController();
 	pc->SetShowMouseCursor(true);
 	
@@ -107,22 +115,25 @@ void AAJH_HttpPracticeActor::OnResGetWebImageFromServer(FHttpRequestPtr Request,
 	}
 }
 
-void AAJH_HttpPracticeActor::POSTMakeIDRequest(const FString url, const FString id, const FString pw)
+void AAJH_HttpPracticeActor::POSTMakeIDRequest(const FString url, const FString name, const FString id, const FString pw)
 {
 	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
 
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
-	RequestObj->SetStringField("id", *id);
-	RequestObj->SetStringField("password", *pw);
+	RequestObj->SetStringField("nickName", name);
+	RequestObj->SetStringField("userName", id);
+	RequestObj->SetStringField("password", pw);
 
 	FString RequestBody;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestBody);
 	FJsonSerializer::Serialize(RequestObj, Writer);
 
 	UE_LOG(LogTemp, Warning, TEXT("pass : %s"), *pw);
-	Request->SetURL(" ");
+	Request->SetURL("http://192.168.155.12:8080/regist");
 	Request->SetVerb(TEXT("POST"));
 	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+
+	UE_LOG(LogTemp, Warning, TEXT("RequestBody : %s"), *RequestBody);
 	Request->SetContentAsString(RequestBody);
 	Request->OnProcessRequestComplete().BindUObject(this, &AAJH_HttpPracticeActor::OnPostData);
 	Request->ProcessRequest();
@@ -150,6 +161,57 @@ void AAJH_HttpPracticeActor::OnPostData(TSharedPtr<IHttpRequest> Request, TShare
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Failed"));
 
+
+	}
+}
+
+void AAJH_HttpPracticeActor::POSTVerifyIDRequest(const FString url, const FString id, const FString pw)
+{
+	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
+
+	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
+	RequestObj->SetStringField("userName", id);
+	RequestObj->SetStringField("password", pw);
+
+	FString RequestBody;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestBody);
+	FJsonSerializer::Serialize(RequestObj, Writer);
+
+	Request->SetURL("http://192.168.155.12:8080/login");
+	Request->SetVerb(TEXT("POST"));
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+
+	UE_LOG(LogTemp, Warning, TEXT("RequestBody : %s"), *RequestBody);
+	Request->SetContentAsString(RequestBody);
+	Request->OnProcessRequestComplete().BindUObject(this, &AAJH_HttpPracticeActor::OnPostVerifySignIn);
+	Request->ProcessRequest();
+}
+
+void AAJH_HttpPracticeActor::OnPostVerifySignIn(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bConnectedSuccessfully)
+{
+	if (bConnectedSuccessfully)
+	{
+		// Response 값 Parsing
+		FString res = Response->GetContentAsString();
+		FString parsedData = UJsonParseLib::JsonParse(res);
+
+
+		// 로그인 성공
+		if (parsedData.Contains("null")) {
+			UE_LOG(LogTemp, Warning, TEXT("Login Success %s"), *parsedData);
+			UE_LOG(LogTemp, Warning, TEXT("Successed Verify Login: %s"), *Response->GetContentAsString());
+
+			return;
+		}
+		else
+		{
+			// 로그인 실패
+			UE_LOG(LogTemp, Warning, TEXT("Login Failed %s"), *parsedData);
+		}
+
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Failed"));
 
 	}
 }

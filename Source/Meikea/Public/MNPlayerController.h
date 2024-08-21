@@ -25,6 +25,9 @@ class MEIKEA_API AMNPlayerController : public APlayerController
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* IA_MouseLeftClick;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* IA_ObjectRotate;
+
 	// Stat Variables
 	UPROPERTY()
 	AActor* SelectActor;
@@ -67,6 +70,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void OnMouseLeftClick(const FInputActionValue& Value);
+	void OnObjectRotate(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
 	void SetSelectIndex(int NewIndex);
@@ -76,4 +80,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void SetSelectActor();
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE AActor* GetSelectActor() {return SelectActor;}
 };

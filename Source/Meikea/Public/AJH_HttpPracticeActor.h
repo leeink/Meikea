@@ -31,6 +31,10 @@ public:
 
 	UPROPERTY()
 	class UAJH_HttpBasicWidget* httpUI;
+	UPROPERTY()
+	class UAJH_JoinWidget* joinUI;
+	UPROPERTY()
+	class UAJH_LoginWidget* loginUI;
 
 	// ---------------------- 웹 이미지 버튼 이벤트 start---------------------------
 	// ButtonGetWebImage를 눌렀을 때 요청할 함수
@@ -46,7 +50,9 @@ public:
 
 	//------------------------------- 회원 가입-----------------------------
 
-	void POSTMakeIDRequest(const FString url, const FString id, const FString pw);
+	void POSTMakeIDRequest(const FString url, const FString name, const FString id, const FString pw);
 	void OnPostData(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bConnectedSuccessfully);
+	void POSTVerifyIDRequest(const FString url, const FString id, const FString pw);
+	void OnPostVerifySignIn(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bConnectedSuccessfully);
 
 };
