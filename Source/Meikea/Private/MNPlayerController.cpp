@@ -9,6 +9,7 @@
 #include "InputMappingContext.h"
 #include "InputAction.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/WidgetInteractionComponent.h"
 
 AMNPlayerController::AMNPlayerController()
 {
@@ -40,6 +41,8 @@ void AMNPlayerController::BeginPlay()
 	SpawnActorClasses.Add(SpawnActorClass5);
 
 	SelectActor = GetWorld() -> SpawnActor<AActor>(SpawnActorClasses[SelectIndex], FVector::ZeroVector, FRotator::ZeroRotator);
+
+	bShowMouseCursor = true;
 }
 
 void AMNPlayerController::Tick(float DeltaTime)
