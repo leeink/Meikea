@@ -13,13 +13,18 @@ FString UJsonParseLib::JsonParse(const FString& json)
 	FString returnValue;
 	if (FJsonSerializer::Deserialize(reader, result))
 	{
-		TArray<TSharedPtr<FJsonValue>> parseDataList = result->GetArrayField(TEXT("items"));
-		for (TSharedPtr<FJsonValue> data : parseDataList)
-		{
-			// 책의 이름과 저자
-			FString bookName = data->AsObject()->GetStringField("bk_nm");
-			FString authorName = data->AsObject()->GetStringField("aut_nm");
-			returnValue.Append(FString::Printf(TEXT("BookName : %s / AuthorName : %s\n"), *bookName, *authorName));
+		//TArray<TSharedPtr<FJsonValue>> parseDataList = result->GetArrayField(TEXT("items"));
+		//for (TSharedPtr<FJsonValue> data : parseDataList)
+		//{
+		//	// 책의 이름과 저자
+		//	FString bookName = data->AsObject()->GetStringField("bk_nm");
+		//	FString authorName = data->AsObject()->GetStringField("aut_nm");
+		//	returnValue.Append(FString::Printf(TEXT("BookName : %s / AuthorName : %s\n"), *bookName, *authorName));
+		//}
+		returnValue = result->GetStringField("error");
+		if (returnValue.IsEmpty()) {
+			returnValue = "null";
+			UE_LOG(LogTemp, Warning, TEXT("no error"));
 		}
 	}
 	// 반환한다.
