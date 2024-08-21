@@ -22,7 +22,7 @@ public:
 	UFUNCTION()
 	void OnMyClickJoinPage();
 
-	UPROPERTY(meta = (BindWidget))
+	//UPROPERTY(meta = (BindWidget))
 	class UButton* BT_login;
 	UFUNCTION()
 	void OnMyClickLoginRequest();
