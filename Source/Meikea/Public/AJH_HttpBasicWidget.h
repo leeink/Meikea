@@ -20,8 +20,8 @@ public:
 	UPROPERTY()
 	class AAJH_HttpPracticeActor* httpActor;
 
-
-	// ------------버튼--------------------
+	// ----------------------------통신----------------------------------------
+	// ------------서버 통신 버튼--------------------
 	UPROPERTY(meta=(BindWidget))
 	class UButton* buttonGetWebImage;
 	UPROPERTY(meta=(BindWidget))
@@ -44,4 +44,16 @@ public:
 	FString ServerURL = "http://mtvs.helloworldlabs.kr:7771/api/json";
 
 	FString WebImageURL = "https://t1.daumcdn.net/news/202105/25/koreadognews/20210525045023050wquu.jpg";
+
+	//---------------------------------------로컬---------------------------------- 
+	// ----첫번째 가구 UI 버튼--------
+	UPROPERTY(meta = (BindWidget))
+	class UButton* BT_firstButton;
+	UFUNCTION()
+	void OnMyClickFirstButton();
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class AActor> firstFurnitureFactory;
+
+	void MouseCusorPosition();
+
 };

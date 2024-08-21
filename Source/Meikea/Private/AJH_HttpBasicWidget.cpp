@@ -33,3 +33,30 @@ void UAJH_HttpBasicWidget::SetHttpActor(AAJH_HttpPracticeActor* actor)
 {
 	httpActor = actor;
 }
+// 첫번째 가구 UI 버튼
+void UAJH_HttpBasicWidget::OnMyClickFirstButton()
+{
+	MouseCusorPosition();
+}
+
+void UAJH_HttpBasicWidget::MouseCusorPosition()
+{
+	FVector mouseWorldLocation;
+	FVector mouseWorldDirection;
+	APlayerController* pc = GetWorld()->GetFirstPlayerController();
+	if (pc)
+	{
+		pc->DeprojectMousePositionToWorld(mouseWorldLocation, mouseWorldDirection);
+	}
+	FHitResult hitResult;
+	FVector start = mouseWorldLocation;
+	FVector end = start + (mouseWorldDirection * 10000.f);
+
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECC_Visibility))
+	{
+		FVector spawnLocation = hitResult.Location;
+		FRotator spawnRotation = FRotator::ZeroRotator;
+		FActorSpawnParameters param;
+		GetWorld()->SpawnActor<AActor>(firstFurnitureFactory, spawnLocation, spawnRotation, param);
+	}
+}
