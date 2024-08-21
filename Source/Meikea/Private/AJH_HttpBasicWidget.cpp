@@ -9,8 +9,8 @@
 
 void UAJH_HttpBasicWidget::NativeConstruct()
 {
-	buttonGetWebImage->OnClicked.AddDynamic(this, &UAJH_HttpBasicWidget::OnMyClickGetWebImage);
-	buttonBackBasicMenu->OnClicked.AddDynamic(this, &UAJH_HttpBasicWidget::OnMyClickBackBasicMenu);
+	/*buttonGetWebImage->OnClicked.AddDynamic(this, &UAJH_HttpBasicWidget::OnMyClickGetWebImage);
+	buttonBackBasicMenu->OnClicked.AddDynamic(this, &UAJH_HttpBasicWidget::OnMyClickBackBasicMenu);*/
 }
 
 void UAJH_HttpBasicWidget::OnMyClickGetWebImage()
