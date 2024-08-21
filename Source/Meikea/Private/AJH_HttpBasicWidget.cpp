@@ -33,7 +33,7 @@ void UAJH_HttpBasicWidget::SetHttpActor(AAJH_HttpPracticeActor* actor)
 {
 	httpActor = actor;
 }
-// Ã¹¹øÂ° °¡±¸ UI ¹öÆ°
+// ì²«ë²ˆì§¸ ê°€êµ¬ UI ë²„íŠ¼
 void UAJH_HttpBasicWidget::OnMyClickFirstButton()
 {
 	MouseCusorPosition();
