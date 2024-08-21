@@ -6,6 +6,7 @@
 #include "Interfaces/IHttpRequest.h"
 #include "ImageUtils.h"
 #include "AJH_HttpBasicWidget.h"
+#include "JsonParseLib.h"
 
 // Sets default values
 AAJH_HttpPracticeActor::AAJH_HttpPracticeActor()
@@ -103,6 +104,53 @@ void AAJH_HttpPracticeActor::OnResGetWebImageFromServer(FHttpRequestPtr Request,
 	else {
 		// 실패
 		UE_LOG(LogTemp, Warning, TEXT("OnResGetWebImageFromServer Failed..."));
+	}
+}
+
+void AAJH_HttpPracticeActor::POSTMakeIDRequest(const FString url, const FString id, const FString pw)
+{
+	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
+
+	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
+	RequestObj->SetStringField("id", *id);
+	RequestObj->SetStringField("password", *pw);
+
+	FString RequestBody;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestBody);
+	FJsonSerializer::Serialize(RequestObj, Writer);
+
+	UE_LOG(LogTemp, Warning, TEXT("pass : %s"), *pw);
+	Request->SetURL(" ");
+	Request->SetVerb(TEXT("POST"));
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(RequestBody);
+	Request->OnProcessRequestComplete().BindUObject(this, &AAJH_HttpPracticeActor::OnPostData);
+	Request->ProcessRequest();
+}
+
+void AAJH_HttpPracticeActor::OnPostData(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bConnectedSuccessfully)
+{
+	if (bConnectedSuccessfully)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Successed SingIn : %s"), *Response->GetContentAsString());
+		// Response 값 Parsing
+		FString res = Response->GetContentAsString();
+		FString parsedData = UJsonParseLib::JsonParse(res);
+
+		if (parsedData.Contains("null")) 
+		{
+			return;
+		}
+		else
+		{
+			// 로그인 실패
+			UE_LOG(LogTemp, Warning, TEXT("Signin Failed %s"), *parsedData);
+		}
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Failed"));
+
+
 	}
 }
 
