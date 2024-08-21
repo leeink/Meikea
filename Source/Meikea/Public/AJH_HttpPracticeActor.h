@@ -44,6 +44,9 @@ public:
 	void OnResGetWebImageFromServer(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 	//-----------------------웹 이미지 버튼 이벤트 end---------------------------------
 
+	//------------------------------- 회원 가입-----------------------------
 
+	void POSTMakeIDRequest(const FString url, const FString id, const FString pw);
+	void OnPostData(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bConnectedSuccessfully);
 
 };
